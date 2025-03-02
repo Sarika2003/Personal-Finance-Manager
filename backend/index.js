@@ -18,7 +18,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Make sure this matches frontend URL
+    origin: "http://localhost:5173", 
   },
 }); 
 
@@ -26,7 +26,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
-  req.io = io; // Attach socket.io instance to req object
+  req.io = io; 
   next();
 });
  
