@@ -1,25 +1,37 @@
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { CurrencyRupeeIcon } from "@heroicons/react/24/solid";
 
-const AddBudgetForm = () => {
+const AddBudgetForm = ({ handleBudgetCreated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(""); 
   const formRef = useRef(null);
   const focusRef = useRef(null);
 
   useEffect(() => {
-    if (!isSubmitting) {
-      formRef.current.reset();
-      focusRef.current.focus();
-    }
-  }, [isSubmitting]);
+    setTimeout(() => focusRef.current?.focus(), 100); 
+  }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(""); 
 
-    setTimeout(() => {
+    const newBudget = {
+      name: formRef.current.budgetName.value,
+      amount: formRef.current.budgetAmount.value,
+    };
+
+    try {
+      const response = await axios.post("http://localhost:8000/api/budget", newBudget);
+      handleBudgetCreated(response.data.data);
+      formRef.current.reset();
+    } catch (error) {
+      console.error("Error adding budget:", error);
+      setError("Failed to add budget. Please try again.");
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -27,7 +39,10 @@ const AddBudgetForm = () => {
       className="card p-4 shadow-lg flex-grow-1 form-container"
       style={{ width: "100%", maxWidth: "600px" }}
     >
-      <h2 className="text-center mb-4 text-dark">Create Budget</h2>
+      <h2 className="text-center mb-3 text-dark">Create Budget</h2>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+
       <form onSubmit={handleSubmit} ref={formRef}>
         <div className="mb-3">
           <label htmlFor="budgetName" className="form-label fw-bold">

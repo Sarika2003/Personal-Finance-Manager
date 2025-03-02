@@ -1,7 +1,7 @@
 import React from "react";
-import ExpenseItem from "./ExpenseItem";
+import TransactionItem from "./TransactionItem";
 
-const ExpenseTable = ({ expenses }) => {
+const TransactionTable = ({ transactions ,setEditingTransaction }) => {
   return (
     <div className="table-responsive">
       <table className="table table-striped">
@@ -10,15 +10,17 @@ const ExpenseTable = ({ expenses }) => {
             <th className="px-3 py-2">Name</th>
             <th className="px-3 py-2">Amount</th>
             <th className="px-3 py-2">Date</th>
+            <th className="px-3 py-2">Type</th>
             <th className="px-3 py-2">Budget</th>
             <th className="px-3 py-2"></th>
+           
           </tr>
         </thead>
         <tbody className="text-center">
        
-          {expenses.map((expense , index) => (
+          {transactions?.map((transaction , index) => (
              <tr key={index}>
-            <ExpenseItem  expense={expense} />
+            <TransactionItem  transaction={transaction} setEditingTransaction={setEditingTransaction} />
             </tr>
           ))}
          
@@ -28,4 +30,4 @@ const ExpenseTable = ({ expenses }) => {
   );
 };
 
-export default ExpenseTable;
+export default TransactionTable;
