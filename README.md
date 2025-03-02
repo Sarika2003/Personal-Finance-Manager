@@ -24,7 +24,7 @@ The frontend of the Personal Finance Manager is built with React and uses React 
     - Ensures live data synchronization across users.
 
   - Authentication - In Progress
-    - User authentication is being implemented using modern security practices.
+    - User authentication is being implemented using JWT and bcrpyt.
     - Enhancing data security & access control.
 
 ## Current Features:
@@ -39,9 +39,23 @@ The frontend of the Personal Finance Manager is built with React and uses React 
 
 ![Screenshot 2025-02-24 070632](https://github.com/user-attachments/assets/05ae79bf-4c9a-492b-83d7-a5ee108a8c1e)
 
-![Screenshot 2025-02-24 070746](https://github.com/user-attachments/assets/81f19568-286f-4a16-8b1b-6c22055607e0)
+Create Transaction and select category from budgets we created.
+ 
+![Screenshot 2025-03-02 174700](https://github.com/user-attachments/assets/ac314db1-2b89-4373-ba20-9e0253c76a07)
 
-![Screenshot 2025-02-24 070849](https://github.com/user-attachments/assets/59d8b012-2f8b-4d0c-9bc0-4c96c2a4e693)
+Recent Transactions
+
+![Screenshot 2025-03-02 174847](https://github.com/user-attachments/assets/89e54139-dc91-40b0-954e-1b1651aeece6)
+
+Edit/Update Transaction
+
+![Screenshot 2025-03-02 174921](https://github.com/user-attachments/assets/df5e145b-949e-4ef0-b319-5cbac5d9025b)
+
+Transaction Updated
+
+![Screenshot 2025-03-02 174931](https://github.com/user-attachments/assets/b3d9960a-13ab-4b8a-894a-228561c883a2)
+
+
 
 
 
