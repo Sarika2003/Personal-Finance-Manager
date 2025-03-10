@@ -1,41 +1,32 @@
 ## Overview
-The frontend of the Personal Finance Manager is built with React and uses React Router for navigation. The application allows users to manage their finances efficiently by setting budgets, tracking expenses, and viewing recent transactions.Recently, major backend additions and frontend improvements were made.
+This project is a Budget Management System that allows users to manage their budgets effectively. Users can create budgets, track expenses, and view financial summaries. It provides insights into spending habits and helps users stay within their financial limits.
 
-## Frontend Enhancements
-  - Transaction Form
-    - Users can create ,update and delete transactions seamlessly.
-    - Form now pre-fills data when editing transactions.
-    - Added input validation for a better experience.
-  - Transaction Management
-    - Edit & Delete functionality for transactions.
-    - UI dynamically updates after any change.
-    - Color-coded transaction types:
-       - Credit → Green border
-       - Expense → Red border
+## Frontend Features
+  - Dashboard
+    - Includes a Budget Form for adding new budgets.
+    - Displays all created budgets with spending progress.
+    - Provides a Transaction Form to log expenses and credits.
+    - User can create,edit and delete transactions.
+       
+  - Budget Page
+    - Displays details of a selected budget.
+    - Lists all transactions associated with the budget.
+    - Includes a Transaction Overview Section summarizing total expenses and remaining funds.
+    - Alerts users if spending exceeds the budget.
 
-## Backend Updates
+## Backend Features
   - Budget & Transaction APIs
     - REST APIs created for budgets & transactions.
     - Supports full CRUD operations.
-    - Optimized API structure for better performance.
-
+      
   - Real-Time Updates
     - Socket.io integration for instant transaction updates.
     - Ensures live data synchronization across users.
 
-  - Authentication - In Progress
-    - User authentication is being implemented using JWT and bcrpyt.
+  - Authentication 
+    - User authentication is implemented using JWT.
+    - Used bcrpyt for password encryption
     - Enhancing data security & access control.
-
-## Current Features:
- *  User Authentication: Login and Registration pages are implemented.
- *  Dashboard: Users can define a budget, create expenses, and view recent expenses.
- *  Routing: Navigation is handled using react-router-dom.
-
-## Upcoming Enhancements:
- - Adding UI improvements and interactive elements.
- - Enhancing the dashboard with better insights and analytics.
- - More features for managing budgets efficiently.
 
 ![Screenshot 2025-02-24 070632](https://github.com/user-attachments/assets/05ae79bf-4c9a-492b-83d7-a5ee108a8c1e)
 
