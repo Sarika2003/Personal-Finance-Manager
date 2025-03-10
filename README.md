@@ -1,6 +1,19 @@
 ## Overview
 This project is a Budget Management System that allows users to manage their budgets effectively. Users can create budgets, track expenses, and view financial summaries. It provides insights into spending habits and helps users stay within their financial limits.
 
+
+![Screenshot 2025-03-10 131956](https://github.com/user-attachments/assets/ba119050-98af-467a-9244-8fb040384b28)
+
+ 
+Budgets and Transactions Section
+
+![Screenshot 2025-03-10 132446](https://github.com/user-attachments/assets/4041fde4-c3ea-44e6-94cc-ba1e568c3c5a)
+
+
+Budget Page
+
+![Screenshot 2025-03-10 132547](https://github.com/user-attachments/assets/12ccd598-4616-4bbf-b4ff-d7370f926218)
+
 ## Frontend Features
   - Dashboard
     - Includes a Budget Form for adding new budgets.
@@ -28,23 +41,7 @@ This project is a Budget Management System that allows users to manage their bud
     - Used bcrpyt for password encryption
     - Enhancing data security & access control.
 
-![Screenshot 2025-02-24 070632](https://github.com/user-attachments/assets/05ae79bf-4c9a-492b-83d7-a5ee108a8c1e)
 
-Create Transaction and select category from budgets we created.
- 
-![Screenshot 2025-03-02 174700](https://github.com/user-attachments/assets/ac314db1-2b89-4373-ba20-9e0253c76a07)
-
-Recent Transactions
-
-![Screenshot 2025-03-02 174847](https://github.com/user-attachments/assets/89e54139-dc91-40b0-954e-1b1651aeece6)
-
-Edit/Update Transaction
-
-![Screenshot 2025-03-02 174921](https://github.com/user-attachments/assets/df5e145b-949e-4ef0-b319-5cbac5d9025b)
-
-Transaction Updated
-
-![Screenshot 2025-03-02 174931](https://github.com/user-attachments/assets/b3d9960a-13ab-4b8a-894a-228561c883a2)
 
 
 
