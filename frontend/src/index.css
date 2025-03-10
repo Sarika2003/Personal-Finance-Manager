@@ -28,3 +28,90 @@ p, span, label {
   font-size: 60px;
   margin-top: 50px;
 }
+
+/* Card Styling */
+.budget-card {
+  border: solid #d0c902 !important; 
+  max-width: 100%;
+  width: 400px;
+  color: #ea8807 !important;
+  border-radius: 17px !important;
+  box-shadow: 2px 7px 5px rgb(225, 218, 5) !important; 
+  background: white; 
+}
+
+.custom-progress-bar{
+  background: linear-gradient(90deg, #34D399, #059669); 
+  border-radius: 6px;
+  transition: width 0.4s ease-in-out; 
+}
+.view-details-btn {
+  background: linear-gradient(135deg, #b58c06, #3ddbb9); 
+  border: none;
+  color: white;
+  width: 100%;
+}
+
+.view-details-btn:hover {
+  background-color: #ffffff !important; 
+}
+
+
+.tooltip-container {
+  position:absolute;
+  cursor: pointer !important; 
+  z-index: 99; 
+  right:80px;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  background-color: black;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  width: max-content;
+  top: -35px; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999 !important; 
+}
+
+.tooltip-container:hover .tooltip {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.budget {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  padding: 20px;
+  /* padding-top: 30px;
+  padding-bottom:30px; */
+
+
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.budget:hover {
+  transform: scale(1.02);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for text alerts */
+.text-danger {
+  color: #dc3545 !important; /* Red for warnings */
+}
+
+.text-success {
+  color: #28a745 !important; /* Green for success */
+}
+
+.fw-bold {
+  font-weight: 700;
+}
+

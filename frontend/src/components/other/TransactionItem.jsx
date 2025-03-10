@@ -1,12 +1,16 @@
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
+import { showSuccessToast } from "../../utils/toastConfig";
 
 
 const TransactionItem = ({ transaction ,setEditingTransaction}) => {
    
 
 const handleTransactionDelete = async (id)=>{
- await axios.delete(`http://localhost:8000/api/transaction/${id}`);
+ await axios.delete(`http://localhost:8000/api/transaction/${id}` ,{
+  withCredentials: true,
+});
+showSuccessToast("Transaction deleted successfully");
 }
 
 

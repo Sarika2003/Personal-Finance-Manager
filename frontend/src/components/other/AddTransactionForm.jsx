@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
+import { showFailureToast, showSuccessToast } from "../../utils/toastConfig";
 
 const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransaction,setEditingTransaction }) => {
   const [formData, setFormData] = useState({
@@ -17,12 +18,12 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
       setFormData({
         title: editingTransaction.title,
         amount: editingTransaction.amount,
-        category: editingTransaction.category.name, 
+        category: editingTransaction?.category?.name || "", // Prevent error if category is null
         type: editingTransaction.type,
       });
     }
   }, [editingTransaction]);
-  // Handle form field changes
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -30,34 +31,40 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
+
     try {
+      
       if (editingTransaction) {
-        // Update existing transaction
-        const response = await axios.put(
+      const response=  await axios.put(
           `http://localhost:8000/api/transaction/${editingTransaction._id}`,
-          formData
+          formData,
+          { withCredentials: true }
         );
-        handleTransactionCreated(response.data.data);
-        setEditingTransaction(null);
+        setEditingTransaction(null); 
+        handleTransactionCreated(response.data.data); 
+        showSuccessToast("Transaction updated successfully");
       } else {
-        // Create new transaction
-        const response = await axios.post(
+      const response=  await axios.post(
           "http://localhost:8000/api/transaction",
-          formData
+          formData,
+          { withCredentials: true }
         );
+
         handleTransactionCreated(response.data.data);
+        showSuccessToast("Transaction created successfully");
       }
-  
+      
+      
       setFormData({ title: "", amount: "", category: "", type: "" });
-  
+
     } catch (error) {
+      showFailureToast("Something went wrong");
       console.error("Error submitting transaction:", error);
     } finally {
       setIsSubmitting(false);
-      
     }
   };
+
   
   return (
     <div

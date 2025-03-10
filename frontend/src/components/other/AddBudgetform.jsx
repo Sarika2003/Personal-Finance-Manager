@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { CurrencyRupeeIcon } from "@heroicons/react/24/solid";
+import { showSuccessToast } from "../../utils/toastConfig";
 
 const AddBudgetForm = ({ handleBudgetCreated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,12 +24,15 @@ const AddBudgetForm = ({ handleBudgetCreated }) => {
     };
 
     try {
-      const response = await axios.post("http://localhost:8000/api/budget", newBudget);
+      const response = await axios.post("http://localhost:8000/api/budget", newBudget,{
+        withCredentials: true, 
+      });
       handleBudgetCreated(response.data.data);
+      showSuccessToast("Budget created successfully")
       formRef.current.reset();
     } catch (error) {
       console.error("Error adding budget:", error);
-      setError("Failed to add budget. Please try again.");
+      setError("Budget already exists. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
