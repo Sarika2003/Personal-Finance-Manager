@@ -1,5 +1,5 @@
 ## Overview
-This project is a Budget Management System that allows users to manage their budgets effectively. Users can create budgets, track expenses, and view financial summaries. It provides insights into spending habits and helps users stay within their financial limits.
+This project is a Budget Management System that allows users to manage their budgets effectively. Users can create budgets, track transactions, and view financial summaries. It provides insights into spending habits and helps users stay within their financial limits.
 
 
 ![Screenshot 2025-03-10 131956](https://github.com/user-attachments/assets/ba119050-98af-467a-9244-8fb040384b28)
