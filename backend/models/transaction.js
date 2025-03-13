@@ -24,7 +24,8 @@ const transactionSchema = new mongoose.Schema({
     required: true },
   createdAt: {
     type: Date,
-    default: () => new Date().toLocaleDateString("en-GB"),
+    // default: () => new Date().toLocaleDateString("en-GB"),
+    default: Date.now,
   },
 });
 
