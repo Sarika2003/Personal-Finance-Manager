@@ -31,10 +31,6 @@ Budget Page
   - Budget & Transaction APIs
     - REST APIs created for budgets & transactions.
     - Supports full CRUD operations.
-      
-  - Real-Time Updates
-    - Socket.io integration for instant transaction updates.
-    - Ensures live data synchronization across users.
 
   - Authentication 
     - User authentication is implemented using JWT.
