@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { BanknotesIcon, ExclamationTriangleIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { BanknotesIcon, ExclamationTriangleIcon, TrashIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
+import { showErrorToast, showSuccessToast } from "../../utils/toastConfig";
 
-const BudgetItem = ({ budget, transactions, showDelete = false }) => {
+const BudgetItem = ({ budget, transactions, showSavings, showDelete = false }) => {
     const navigate = useNavigate();
     const { _id, name, amount } = budget;
 
@@ -10,6 +11,12 @@ const BudgetItem = ({ budget, transactions, showDelete = false }) => {
     const associatedTransactions = transactions.filter(
         (transaction) => transaction.category.name === name
     );
+    const hasCreditTransaction = associatedTransactions.some(txn => txn.type === "Credit");
+    const hasExpenseTransaction = associatedTransactions.some(txn => txn.type === "Expense");
+
+    // Conditionally skip rendering if no transactions of relevant type
+    if (showSavings && !hasCreditTransaction) return null;
+    if (!showSavings && !hasExpenseTransaction) return null;
 
     // Separate expenses and credits
     const totalExpenses = associatedTransactions
@@ -20,31 +27,32 @@ const BudgetItem = ({ budget, transactions, showDelete = false }) => {
         .filter((txn) => txn.type === "Credit")
         .reduce((acc, txn) => acc + txn.amount, 0);
 
-    // Adjust budget using credits
-    const adjustedBudget = amount + totalCredits;
-    const overspending = totalExpenses > adjustedBudget;
-    const remainingAmount = adjustedBudget - totalExpenses;
+    // for expense
+    const overspending = totalExpenses > amount;
+    const remainingAmount = amount - totalExpenses;
+
+    // For savings;
+    const savingsPositive = totalCredits >= amount;
+    const savingsLeft = amount - totalCredits;
 
     const handleBudgetDelete = async (id) => {
         try {
             const associatedTransactionIds = transactions
-            .filter((txn) => txn.category && txn.category._id === _id)
-            .map((txn) => txn._id);
-    
-            // Delete all transactions in parallel
+                .filter((txn) => txn.category && txn.category._id === _id)
+                .map((txn) => txn._id);
+
             await Promise.all(
                 associatedTransactionIds.map((txnId) =>
-                    axios.delete(`http://localhost:8000/api/transactions/${txnId}`, {
+                    axios.delete(`http://localhost:8000/api/transaction/${txnId}`, {
                         withCredentials: true,
                     })
                 )
             );
-    
-            // Delete the budget itself
+
             await axios.delete(`http://localhost:8000/api/budget/${id}`, {
                 withCredentials: true,
             });
-    
+
             navigate("/dashboard");
             showSuccessToast("Budget and all associated transactions deleted successfully");
         } catch (error) {
@@ -52,50 +60,77 @@ const BudgetItem = ({ budget, transactions, showDelete = false }) => {
             showErrorToast("Failed to delete budget. Please try again.");
         }
     };
-    
-
 
     return (
         <div className="card budget-card shadow-sm p-3 mb-4">
             <div className="card-body">
-                {/* Title and Budget Info */}
                 <div className="d-flex justify-content-between align-items-center">
                     <h5 className="card-title fw-bold">{name}</h5>
                     <div className="text-end">
-                        {/* Tooltip for budget exceeded */}
-                        {overspending && (
-                            <div className="tooltip-container">
-                                <ExclamationTriangleIcon width={24} className="text-danger" />
-                                <span className="tooltip">Budget Exceeded</span>
-                            </div>
+                        {showSavings ? (
+                            savingsPositive && (
+                                <div className="tooltip-container">
+                                    <SparklesIcon width={24} className="text-warning" />
+                                    <span className="tooltip">Goal Achieved!</span>
+                                </div>
+                            )
+                        ) : (
+                            overspending && (
+                                <div className="tooltip-container">
+                                    <ExclamationTriangleIcon width={24} className="text-danger" />
+                                    <span className="tooltip">Budget Exceeded</span>
+                                </div>
+                            )
                         )}
-                        <p className="mb-0 fw-bold">₹{adjustedBudget}</p>
+
+                        <p className="mb-0 fw-bold">₹{amount}</p>
                         <small className="text-muted">Budgeted</small>
                     </div>
                 </div>
 
-                {/* Progress Bar - FIXED */}
+                {/* Progress Bar */}
                 <div className="progress my-3" style={{ height: "8px" }}>
                     <div
-                        className={`progress-bar ${overspending ? "bg-danger" : "custom-progress-bar"}`}
+                        className={`progress-bar ${
+                            showSavings
+                                ? (savingsPositive ? "bg-success" : "custom-progress-bar")
+                                : (overspending ? "bg-danger" : "custom-progress-bar")
+                        }`}
                         role="progressbar"
                         style={{
-                            width: adjustedBudget > 0
-                                ? `${(totalExpenses / adjustedBudget) * 100}%`
+                            width: amount > 0
+                                ? `${(showSavings
+                                    ? (totalCredits / amount) * 100
+                                    : (totalExpenses / amount) * 100)}%`
                                 : "0%",
                         }}
-                        aria-valuenow={totalExpenses}
+                        aria-valuenow={showSavings ? totalCredits : totalExpenses}
                         aria-valuemin="0"
-                        aria-valuemax={adjustedBudget}
+                        aria-valuemax={amount}
                     ></div>
                 </div>
 
-                {/* Spent & Remaining Amount */}
+                {/* Info Below Progress */}
                 <div className="d-flex justify-content-between text-muted">
-                    <small className="fw-bold">₹{totalExpenses} spent</small>
-                    <small className={overspending ? "text-danger fw-bold" : "text-muted"}>
-                        {overspending ? `₹${Math.abs(remainingAmount)} over` : `₹${remainingAmount} remaining`}
-                    </small>
+                    {showSavings ? (
+                        <>
+                            <small className="fw-bold">₹{totalCredits} saved</small>
+                            <small className={savingsPositive ? "text-success fw-bold" : "text-muted"}>
+                                {savingsPositive
+                                    ? "Goal Completed 🎉"
+                                    : `₹${savingsLeft} remaining`}
+                            </small>
+                        </>
+                    ) : (
+                        <>
+                            <small className="fw-bold">₹{totalExpenses} spent</small>
+                            <small className={overspending ? "text-danger fw-bold" : "text-muted"}>
+                                {overspending
+                                    ? `₹${Math.abs(remainingAmount)} over`
+                                    : `₹${remainingAmount} remaining`}
+                            </small>
+                        </>
+                    )}
                 </div>
 
                 {/* Buttons */}

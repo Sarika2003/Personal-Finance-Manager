@@ -5,6 +5,7 @@ import AddBudgetForm from "../components/other/AddBudgetform";
 import AddTransactionForm from "../components/other/AddTransactionForm";
 import TransactionTable from "../components/other/TransactionTable";
 import BudgetItem from "../components/other/BudgetItem";
+import money from "../assets/money.png"
 
 const socket = io("http://localhost:8000", {
   withCredentials: true,
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [showSavings, setShowSavings] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -57,9 +59,17 @@ const Dashboard = () => {
 
   return (
     <>
+
+    <div className="d-flex align-items-center">
       <h1 className="heading">
         <span style={{ color: "#0DB4A7", fontWeight: "bold" }}>Small steps</span>, big savings!
       </h1>
+       <img 
+                   src={money} 
+                   alt="money img"
+                   className="moneyImg"
+                 />
+                 </div>
 
       <div className="d-flex justify-content-center align-items-center flex-wrap gap-5 mt-5">
         <AddBudgetForm handleBudgetCreated={handleBudgetCreated} />
@@ -78,12 +88,16 @@ const Dashboard = () => {
       ) : (
         <>
           <div className="mt-5">
-            <h2 className="fw-bold fs-1 mb-4">Existing Budgets</h2>
-            <div className="d-flex flex-wrap gap-3 align-items-center">
+            <div className="d-flex justify-content-between"> <h2 className="fw-bold fs-1 mb-4 mx-4">Existing Budgets</h2>
+            <button className="btn btn-outline-dark mb-3 py-1" onClick={() => setShowSavings(!showSavings)}>
+  {showSavings ? 'Show Expense Budgets' : 'Show Saving Budgets'}
+</button> </div>
+           
+            <div className="d-flex flex-wrap gap-3 align-items-center ">
             {budgets.length > 0 ? (
-              budgets.map((budget) => <BudgetItem key={budget.id} budget={budget} transactions={transactions} />)
+              budgets.map((budget) => <BudgetItem key={budget._id} budget={budget} transactions={transactions}  showSavings={showSavings}  />)
             ) : (
-              <p className="text-muted fs-5 text-center">No budgets added yet.</p>
+              <p className=" text-center text-muted fs-5 ">No budgets added yet.</p>
             )}
             </div>
           </div>

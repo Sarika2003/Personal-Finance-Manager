@@ -40,7 +40,7 @@ const Login = () => {
     };
 
     return (
-        <div className="d-flex vh-100 align-items-center justify-content-center" style={{ backgroundColor: "#2d2d2d" }}>
+        <div className="d-flex vh-100 align-items-center justify-content-center" style={{ backgroundColor: "rgb(233 240 241);" }}>
             <div className="card p-4 mt-4 shadow-lg border-0 rounded" style={{ width: "400px", backgroundColor: "#1a1a1a" }}>
                 <h3 className="text-center text-light">Login</h3>
                 {error && <p className="text-danger text-center">{error}</p>}
@@ -53,10 +53,10 @@ const Login = () => {
                         <input type="password" className="form-control border border-success text-dark"
                             placeholder="Enter password" name="password" value={formData.password} onChange={handleChange} required />
                     </div>
-                    <button type="submit" className="btn btn-success w-100">Log in</button>
+                    <button type="submit" className="btn btn-primary w-100">Log in</button>
                 </form>
                 <p className="text-center mt-3 text-light">
-                    Not registered? <Link to="/register" className="text-success text-decoration-none">Create an account</Link>
+                    Not registered? <Link to="/register" className="text-primary text-decoration-none">Create an account</Link>
                 </p>
             </div>
         </div>

@@ -1,63 +1,106 @@
 import { ChartBarIcon } from "@heroicons/react/24/solid";
+import expense from "../../assets/expense.png"
+import saving from "../../assets/saving.png"
 
-const Overview = ({ budget, transactions }) => {
-  // Separate expenses and credits
+const Overview = ({ budget, transactions, showSavings }) => {
+  // Total Expenses
   const totalExpenses = transactions
     .filter(txn => txn.type === "Expense")
     .reduce((acc, txn) => acc + txn.amount, 0);
 
+  // Total Credits (Savings)
   const totalCredits = transactions
     .filter(txn => txn.type === "Credit")
     .reduce((acc, txn) => acc + txn.amount, 0);
 
-  // Adjust budget using available credits
-  const adjustedBudget = budget.amount + totalCredits;
-  const overspending = totalExpenses > adjustedBudget;
-
-  // Identify the top expense and top credit transaction
+  // Top Expense
   const topExpense = transactions
     .filter(txn => txn.type === "Expense")
     .reduce((prev, curr) => (curr.amount > prev.amount ? curr : prev), transactions[0]);
 
+  // Top Credit
   const topCredit = transactions
     .filter(txn => txn.type === "Credit")
     .reduce((prev, curr) => (curr.amount > prev.amount ? curr : prev), transactions[0]);
+
+  // Check for budget exceed
+  const exceeded = totalExpenses > budget.amount;
+  const exceededAmount = totalExpenses - budget.amount;
+
+  // Check for saving goal complete
+  const goalCompleted = totalCredits >= budget.amount;
 
   return (
     <div className="budget shadow-sm p-3 mt-4" style={{ maxWidth: "800px" }}>
       <h3 className="fw-bold">
         <ChartBarIcon width={25} style={{ marginBottom: "-5px", marginRight: "4px" }} />
-        Expenses Overview
+        {showSavings ? "Savings Overview" : "Expenses Overview"}
       </h3>
 
-      {/* Expense Summary */}
-      {overspending ? (
-        <p className="text-danger fw-bold">
-          ⚠️ Your <strong>{budget.name}</strong> budget has been exceeded by ₹{Math.abs(adjustedBudget - totalExpenses)}.
-        </p>
-      ) : (
-        <p className="text-success fw-bold">
-          ✅ You are within your budget! Your remaining balance is ₹{adjustedBudget - totalExpenses}. 🎉
-        </p>
-      )}
-
-      {topExpense && (
-        <p>
-          💸 The top expense was <strong>{topExpense.title}</strong> with a total of ₹{topExpense.amount} spent.
-        </p>
-      )}
-
-      {/* Credit Summary */}
-      {totalCredits > 0 && (
+      {/* Expense Overview */}
+      {!showSavings && (
         <>
-          <h4 className="fw-bold mt-3">Credits Overview</h4>
-          <p className="text-primary fw-bold">
-            💰 Total credited: ₹{totalCredits}
+          <p className="text-primary fw-bold mt-4">
+            💸 Total Expenses: ₹{totalExpenses}
           </p>
-          {topCredit && (
-            <p>
-              🏆 The highest credited transaction was <strong>{topCredit.title}</strong> with ₹{topCredit.amount} added.
+
+          {exceeded && (
+             <>
+             <div className="d-flex align-items-center">
+            <p className="text-danger fw-bold fs-5">
+              ⚠️ You exceeded your budget by ₹{exceededAmount}!
+              {topExpense && (
+                <> Major spending: <strong>{topExpense.title}</strong> - ₹{topExpense.amount}</>
+              )}
             </p>
+            <img 
+             src={expense} 
+             alt="Sad Wallet"
+             className="expenseImg"
+           />
+            </div>
+            </>
+
+          )}
+
+          {topExpense ? (
+            <p>
+              📉 Top Expense: <strong>{topExpense.title}</strong> - ₹{topExpense.amount}
+            </p>
+          ) : (
+            <p>No expenses recorded yet.</p>
+          )}
+        </>
+      )}
+
+      {/* Savings Overview */}
+      {showSavings && (
+        <>
+          <p className="text-success fw-bold mt-4">
+            💰 Total Savings: ₹{totalCredits}
+          </p>
+
+          {goalCompleted && (
+            <>
+            <div className="d-flex align-items-center">
+            <p className="text-success fw-bold fs-5">
+              🎯 Congratulations! You achieved your saving goal of ₹{budget.amount}! 🎉
+            </p>
+            <img 
+             src={saving} 
+             alt="Sad Wallet"
+             className="savingImg"
+           />
+            </div>
+          </>
+          )}
+
+          {topCredit ? (
+            <p>
+              🏆 Top Saving: <strong>{topCredit.title}</strong> - ₹{topCredit.amount}
+            </p>
+          ) : (
+            <p>No savings recorded yet.</p>
           )}
         </>
       )}

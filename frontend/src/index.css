@@ -25,9 +25,39 @@ p, span, label {
 }
 
 .heading{
-  font-size: 60px;
+  font-size: 65px;
   margin-top: 50px;
 }
+
+/* home page */
+.custom-btn {
+  transition: transform 0.3s ease !important;
+}
+.custom-btn-dark {
+  transition: transform 0.3s ease !important;
+} 
+.custom-btn:hover {
+  background-color: #212529 ; 
+  color: #fff ;
+  transform: translateY(-1px) scale(1.05);
+}
+
+.custom-btn-dark:hover {
+  background-color: #343a40; 
+  color: #fff;
+  transform: translateY(-1px) scale(1.03);
+}
+
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(4, 163, 255, 0.1) !important;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(9, 136, 220, 0.2) !important;
+}
+
 
 /* Card Styling */
 .budget-card {
@@ -113,5 +143,23 @@ p, span, label {
 
 .fw-bold {
   font-weight: 700;
+}
+
+/* images */
+.expenseImg{
+  width: 150px;
+  height: 140px;
+  margin-top: 10px;
+}
+
+.savingImg{
+  width: 150px;
+  height: 140px;
+  margin-top: 10px;
+}
+.moneyImg{
+  width: 250px;
+  height: 210px;
+  margin-top: 10px;
 }
 

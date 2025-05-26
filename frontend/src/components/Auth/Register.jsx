@@ -42,7 +42,7 @@ const Register = () => {
             }
             console.log("Registration Successful:", response.data);
             showSuccessToast("Registration successful!")
-            navigate("/"); // Redirect to login page after success
+            navigate("/login"); // Redirect to login page after success
         } catch (err) {
             console.error("Registration Failed:", err.response?.data || err.message);
             setError(err.response?.data?.message || "Something went wrong!");
@@ -50,7 +50,7 @@ const Register = () => {
     };
 
     return (
-        <div className="d-flex vh-100 align-items-center justify-content-center" style={{ backgroundColor: "#2d2d2d" }}>
+        <div className="d-flex vh-100 align-items-center justify-content-center" style={{ backgroundColor: "rgb(233 240 241);" }}>
             <div className="card p-4 mt-4 shadow-lg border-0 rounded" style={{ width: "400px", backgroundColor: "#1a1a1a" }}>
                 <h3 className="text-center text-light">Register</h3>
                 
@@ -101,11 +101,11 @@ const Register = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-success w-100">Register</button>
+                    <button type="submit" className="btn btn-primary w-100">Register</button>
                 </form>
                 
                 <p className="text-center mt-3 text-light">
-                    Already have an account? <Link to="/" className="text-success text-decoration-none">Login</Link>
+                    Already have an account? <Link to="/login" className="text-primary text-decoration-none">Login</Link>
                 </p>
             </div>
         </div>

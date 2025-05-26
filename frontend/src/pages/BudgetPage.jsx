@@ -63,6 +63,9 @@ const BudgetPage = () => {
     (txn) => txn.category._id === _id
   );
 
+  const isSavingBudget = budgetTransactions.some(txn => txn.type === "Credit");
+
+
   if (loading) return <p>Loading...</p>;
 
   if (!selectedBudget) return <p>Budget not found!</p>;
@@ -74,10 +77,11 @@ const BudgetPage = () => {
           budget={selectedBudget}
           transactions={budgetTransactions}
           showDelete={true}
-        />
+          showSavings={isSavingBudget}
+        /> 
       </div>
       <div className="col">
-      <Overview budget={selectedBudget} transactions={budgetTransactions}/></div>
+      <Overview budget={selectedBudget} transactions={budgetTransactions}  showSavings={isSavingBudget}/></div>
       <div className="col">
         <AddExpenseForm budgets={[selectedBudget]} handleTransactionCreated={handleTransactionCreated}
           editingTransaction={editingTransaction}
