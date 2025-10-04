@@ -1,18 +1,17 @@
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
-import axios from "axios";
-import { showSuccessToast } from "../../utils/toastConfig";
+import useFinanceStore from "../../store/financeStore"; 
 
+const TransactionItem = ({ transaction, setEditingTransaction }) => {
+  const deleteTransaction = useFinanceStore((state) => state.deleteTransaction);
+  const financeLoading = useFinanceStore((state) => state.loading);
 
-const TransactionItem = ({ transaction ,setEditingTransaction}) => {
-   
-
-const handleTransactionDelete = async (id)=>{
- await axios.delete(`http://localhost:8000/api/transaction/${id}` ,{
-  withCredentials: true,
-});
-showSuccessToast("Transaction deleted successfully");
-}
-
+  const handleTransactionDelete = async (id) => {
+    try {
+      await deleteTransaction(id); 
+    } catch (error) {
+      console.error("Error deleting transaction in component:", error);
+    }
+  };
 
   return (
     <>
@@ -27,13 +26,23 @@ showSuccessToast("Transaction deleted successfully");
       >
         {transaction.type}
       </td>
-       <td className="fw-bold fs-5 text-info ">{transaction.category.name}</td>
+      <td className="fw-bold fs-5 text-primary ">{transaction.category?.name || 'N/A'}</td> 
       <td className="d-flex justify-content-around">
-        <button type="button" className="btn btn-outline-success " onClick={() => setEditingTransaction(transaction)}>
-          <PencilSquareIcon width={20} /> 
+        <button
+          type="button"
+          className="btn btn-outline-success "
+          onClick={() => setEditingTransaction(transaction)}
+          disabled={financeLoading}
+        >
+          <PencilSquareIcon width={20} />
         </button>
-        <button type="button" className="btn btn-outline-danger" onClick={()=>handleTransactionDelete(transaction._id)}>
-          <TrashIcon width={20} /> 
+        <button
+          type="button"
+          className="btn btn-outline-danger"
+          onClick={() => handleTransactionDelete(transaction._id)}
+          disabled={financeLoading}
+        >
+          <TrashIcon width={20} />
         </button>
       </td>
     </>

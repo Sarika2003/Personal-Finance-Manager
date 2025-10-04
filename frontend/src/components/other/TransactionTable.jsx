@@ -20,7 +20,7 @@ const TransactionTable = ({ transactions ,setEditingTransaction }) => {
        
           {transactions?.map((transaction , index) => (
              <tr key={index}>
-            <TransactionItem  transaction={transaction} setEditingTransaction={setEditingTransaction} />
+                <TransactionItem  transaction={transaction} setEditingTransaction={setEditingTransaction} />
             </tr>
           ))}
          

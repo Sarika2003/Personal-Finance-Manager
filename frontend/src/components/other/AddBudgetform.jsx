@@ -1,40 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { CurrencyRupeeIcon } from "@heroicons/react/24/solid";
-import { showSuccessToast } from "../../utils/toastConfig";
+import useFinanceStore from "../../store/financeStore"; 
 
-const AddBudgetForm = ({ handleBudgetCreated }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(""); 
+const AddBudgetForm = () => {
+  const [error, setError] = useState("");
   const formRef = useRef(null);
   const focusRef = useRef(null);
 
+  const { addBudget, loading: financeLoading } = useFinanceStore();
+
   useEffect(() => {
-    setTimeout(() => focusRef.current?.focus(), 100); 
+    setTimeout(() => focusRef.current?.focus(), 100);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(""); 
+    setError("");
 
     const newBudget = {
       name: formRef.current.budgetName.value,
-      amount: formRef.current.budgetAmount.value,
+      amount: parseFloat(formRef.current.budgetAmount.value), 
     };
 
     try {
-      const response = await axios.post("http://localhost:8000/api/budget", newBudget,{
-        withCredentials: true, 
-      });
-      handleBudgetCreated(response.data.data);
-      showSuccessToast("Budget created successfully")
-      formRef.current.reset();
+      await addBudget(newBudget); 
+      formRef.current.reset(); 
     } catch (error) {
-      console.error("Error adding budget:", error);
-      setError("Budget already exists. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error adding budget in component:", error);
+      setError(error.response?.data?.message || "Budget already exists or something went wrong.");
     }
   };
 
@@ -43,7 +36,7 @@ const AddBudgetForm = ({ handleBudgetCreated }) => {
       className="card p-4 shadow-lg flex-grow-1 form-container"
       style={{ width: "100%", maxWidth: "600px" }}
     >
-      <h2 className="text-center mb-3 text-dark">Create Budget</h2>
+      <h2 className="text-center mb-3 h2">Create Budget</h2>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
@@ -77,10 +70,10 @@ const AddBudgetForm = ({ handleBudgetCreated }) => {
         </div>
         <button
           type="submit"
-          className="btn btn-success w-100 d-flex align-items-center justify-content-center"
-          disabled={isSubmitting}
+          className="btn form-container-btn w-100 d-flex align-items-center justify-content-center"
+          disabled={financeLoading} 
         >
-          {isSubmitting ? (
+          {financeLoading ? (
             <span>Submitting...</span>
           ) : (
             <>

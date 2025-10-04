@@ -13,9 +13,9 @@ const getAllBudgets = async (req, res) => {
 
 // Create a New Budget
 const createBudget = async (req, res) => {
-  console.log("Request Body:", req.body);
-  console.log("User ID from Token:", req.user);
 
+    console.log("createBudget: req.body", req.body); // Check what's received
+  console.log("createBudget: req.user", req.user); 
   try {
     const { name, amount } = req.body;
     const userId = req.user._id;
@@ -27,15 +27,24 @@ const createBudget = async (req, res) => {
     const newBudget = new budgetModel({ name, amount, userId });
     await newBudget.save();
 
-    req.io.emit("budgetUpdated");
 
-    return res.status(201).send({
+    return res.status(201).json({
       status: 1,
       message: "New budget created successfully",
       data: newBudget,
     });
   } catch (error) {
-    return res.status(500).send({
+    // Check for Mongoose duplicate key error (code 11000)
+    if (error.code === 11000) {
+      return res.status(409).json({ // 409 Conflict indicates resource already exists
+        status: 0,
+        message: "A budget with this name already exists for your account.",
+        error: error.message,
+      });
+    }
+
+    // Generic 500 for other unexpected errors
+    return res.status(500).json({ // Changed .send to .json for consistency
       status: 0,
       message: "Error while saving budget",
       error: error.message,
@@ -60,7 +69,7 @@ const updateBudget = async (req, res) => {
     budget.amount = amount;
     await budget.save();
 
-    req.io.emit("budgetUpdated");
+
     res.status(200).json({ status: 1, message: "Budget updated successfully", data: budget });
   } catch (error) {
     res.status(500).json({ status: 0, message: "Error updating budget", error: error.message });
@@ -81,7 +90,6 @@ const deleteBudget = async (req, res) => {
 
     await budgetModel.deleteOne({ _id: budgetId });
 
-    req.io.emit("budgetUpdated");
     res.status(200).json({ status: 1, message: "Budget deleted successfully" });
   } catch (error) {
     res.status(500).json({ status: 0, message: "Error deleting budget", error: error.message });

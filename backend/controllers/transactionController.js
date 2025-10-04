@@ -25,22 +25,31 @@ const createTransaction = async (req, res) => {
     const { title, amount, category, type } = req.body;
     const userId = req.user._id;
 
-    const budget = await budgetModel.findOne({ name: category, userId });
-    if (!budget) return res.status(400).json({ error: "Invalid budget category for user" });
+    const budget = await budgetModel.findById(category); // category is the _id
+    if (!budget || budget.userId.toString() !== userId.toString()) {
+      return res.status(400).json({ error: "Invalid or unauthorized budget category" });
+    }
 
     const transaction = new transactionModel({
       userId,
       title,
       amount,
-      category: budget._id,
+      category: budget._id, // Storing the _id
       type,
     });
 
     await transaction.save();
-    req.io.emit("transactionUpdated");
+
+    // --- IMPORTANT CHANGE HERE: Populate category before sending response ---
+    await transaction.populate({
+      path: "category",
+      model: "budget",
+    });
+    // --- END IMPORTANT CHANGE ---
 
     res.status(201).json({ status: 1, message: "New transaction created", data: transaction });
   } catch (e) {
+    console.error("Error creating transaction:", e); // Add this for better backend debugging
     res.status(500).json({ status: 0, message: "Error while creating transaction", error: e.message });
   }
 };
@@ -52,8 +61,10 @@ const updateTransaction = async (req, res) => {
     const { title, amount, category, type } = req.body;
     const userId = req.user._id;
 
-    const budget = await budgetModel.findOne({ name: category, userId });
-    if (!budget) return res.status(400).json({ error: "Invalid budget category for user" });
+    const budget = await budgetModel.findById(category); // category is the _id
+    if (!budget || budget.userId.toString() !== userId.toString()) {
+      return res.status(400).json({ error: "Invalid or unauthorized budget category" });
+    }
 
     const transaction = await transactionModel.findOne({ _id: transactionID, userId });
     if (!transaction) {
@@ -62,15 +73,22 @@ const updateTransaction = async (req, res) => {
 
     transaction.title = title;
     transaction.amount = amount;
-    transaction.category = budget._id;
+    transaction.category = budget._id; // Storing the _id
     transaction.type = type;
 
     await transaction.save();
-    req.io.emit("transactionUpdated");
+
+    // --- IMPORTANT CHANGE HERE: Populate category before sending response ---
+    await transaction.populate({
+      path: "category",
+      model: "budget",
+    });
+    // --- END IMPORTANT CHANGE ---
 
     res.status(200).json({ status: 1, message: "Transaction updated successfully", data: transaction });
   } catch (e) {
-    res.status(500).json({ status: 0, message: "Error while updating transaction", error: e.message });
+    console.error("Error updating transaction:", e); // Add this for better backend debugging
+    res.status(500).json({ status: 0, message: "Error updating transaction", error: e.message });
   }
 };
 
@@ -86,7 +104,6 @@ const deleteTransaction = async (req, res) => {
     }
 
     await transactionModel.deleteOne({ _id: transactionID });
-    req.io.emit("transactionUpdated");
 
     res.status(200).json({ status: 1, message: "Transaction deleted successfully" });
   } catch (e) {

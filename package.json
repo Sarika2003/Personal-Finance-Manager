@@ -1,0 +1,22 @@
+{
+  "name": "personal-finance-manager",
+  "version": "1.0.0",
+  "description": "This project is a Budget Management System that allows users to manage their budgets effectively. Users can create budgets, track transactions, and view financial summaries. It provides insights into spending habits and helps users stay within their financial limits.",
+  "main": "index.js",
+  "scripts": {
+    "build":"npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sarika2003/Personal-Finance-Manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Sarika2003/Personal-Finance-Manager/issues"
+  },
+  "homepage": "https://github.com/Sarika2003/Personal-Finance-Manager#readme"
+}

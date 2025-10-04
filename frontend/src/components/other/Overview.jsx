@@ -1,109 +1,86 @@
-import { ChartBarIcon } from "@heroicons/react/24/solid";
-import expense from "../../assets/expense.png"
-import saving from "../../assets/saving.png"
+import { ChartBarIcon, ArrowUpIcon, ArrowDownIcon, TrophyIcon, ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
 const Overview = ({ budget, transactions, showSavings }) => {
   // Total Expenses
   const totalExpenses = transactions
-    .filter(txn => txn.type === "Expense")
+    .filter((txn) => txn.type === "Expense")
     .reduce((acc, txn) => acc + txn.amount, 0);
 
   // Total Credits (Savings)
   const totalCredits = transactions
-    .filter(txn => txn.type === "Credit")
+    .filter((txn) => txn.type === "Credit")
     .reduce((acc, txn) => acc + txn.amount, 0);
 
   // Top Expense
   const topExpense = transactions
-    .filter(txn => txn.type === "Expense")
-    .reduce((prev, curr) => (curr.amount > prev.amount ? curr : prev), transactions[0]);
+    .filter((txn) => txn.type === "Expense")
+    .reduce(
+      (prev, curr) => (curr.amount > prev.amount ? curr : prev),
+      { title: "-", amount: 0 }
+    );
 
   // Top Credit
   const topCredit = transactions
-    .filter(txn => txn.type === "Credit")
-    .reduce((prev, curr) => (curr.amount > prev.amount ? curr : prev), transactions[0]);
+    .filter((txn) => txn.type === "Credit")
+    .reduce(
+      (prev, curr) => (curr.amount > prev.amount ? curr : prev),
+      { title: "-", amount: 0 }
+    );
 
-  // Check for budget exceed
+  // Budget status
   const exceeded = totalExpenses > budget.amount;
   const exceededAmount = totalExpenses - budget.amount;
-
-  // Check for saving goal complete
   const goalCompleted = totalCredits >= budget.amount;
 
   return (
-    <div className="budget shadow-sm p-3 mt-4" style={{ maxWidth: "800px" }}>
-      <h3 className="fw-bold">
-        <ChartBarIcon width={25} style={{ marginBottom: "-5px", marginRight: "4px" }} />
+    <div className="budget-card p-4 mt-4 overview-card">
+      {/* Header */}
+      <h3 className="fw-bold d-flex align-items-center mb-4">
+        <ChartBarIcon width={28} className="me-2 text-primary" />
         {showSavings ? "Savings Overview" : "Expenses Overview"}
       </h3>
 
-      {/* Expense Overview */}
-      {!showSavings && (
-        <>
-          <p className="text-primary fw-bold mt-4">
-            💸 Total Expenses: ₹{totalExpenses}
+      {/* Total */}
+      <p className={`fw-bold mb-3 ${showSavings ? 'text-success-themed' : 'text-primary'}`}>
+        {showSavings ? 'Total Savings' : 'Total Expenses'}: ₹{showSavings ? totalCredits : totalExpenses}
+      </p>
+
+      {/* Status */}
+      {!showSavings && exceeded && (
+        <div className="d-flex align-items-center mb-3">
+          <ExclamationTriangleIcon width={22} className="me-2 text-danger-themed" />
+          <p className="text-danger-themed fw-bold mb-0">
+            You exceeded your budget by ₹{exceededAmount}
           </p>
-
-          {exceeded && (
-             <>
-             <div className="d-flex align-items-center">
-            <p className="text-danger fw-bold fs-5">
-              ⚠️ You exceeded your budget by ₹{exceededAmount}!
-              {topExpense && (
-                <> Major spending: <strong>{topExpense.title}</strong> - ₹{topExpense.amount}</>
-              )}
-            </p>
-            <img 
-             src={expense} 
-             alt="Sad Wallet"
-             className="expenseImg"
-           />
-            </div>
-            </>
-
-          )}
-
-          {topExpense ? (
-            <p>
-              📉 Top Expense: <strong>{topExpense.title}</strong> - ₹{topExpense.amount}
-            </p>
-          ) : (
-            <p>No expenses recorded yet.</p>
-          )}
-        </>
+        </div>
       )}
 
-      {/* Savings Overview */}
-      {showSavings && (
-        <>
-          <p className="text-success fw-bold mt-4">
-            💰 Total Savings: ₹{totalCredits}
+      {showSavings && goalCompleted && (
+        <div className="d-flex align-items-center mb-3">
+          <TrophyIcon width={22} className="me-2 text-success-themed" />
+          <p className="text-success-themed fw-bold mb-0">
+            Goal Achieved! ₹{budget.amount} saved
           </p>
-
-          {goalCompleted && (
-            <>
-            <div className="d-flex align-items-center">
-            <p className="text-success fw-bold fs-5">
-              🎯 Congratulations! You achieved your saving goal of ₹{budget.amount}! 🎉
-            </p>
-            <img 
-             src={saving} 
-             alt="Sad Wallet"
-             className="savingImg"
-           />
-            </div>
-          </>
-          )}
-
-          {topCredit ? (
-            <p>
-              🏆 Top Saving: <strong>{topCredit.title}</strong> - ₹{topCredit.amount}
-            </p>
-          ) : (
-            <p>No savings recorded yet.</p>
-          )}
-        </>
+        </div>
       )}
+
+      {/* Top Item */}
+      {!showSavings && totalExpenses > 0 && (
+        <p className="mb-2 d-flex align-items-center">
+          <ArrowDownIcon width={20} className="me-2 text-primary" />
+          Top Expense: <strong>{topExpense.title}</strong> - ₹{topExpense.amount}
+        </p>
+      )}
+      {showSavings && totalCredits > 0 && (
+        <p className="mb-2 d-flex align-items-center">
+          <ArrowUpIcon width={20} className="me-2 text-success-themed" />
+          Top Saving: <strong>{topCredit.title}</strong> - ₹{topCredit.amount}
+        </p>
+      )}
+
+      {/* Fallback */}
+      {!showSavings && totalExpenses === 0 && <p>No expenses recorded yet.</p>}
+      {showSavings && totalCredits === 0 && <p>No savings recorded yet.</p>}
     </div>
   );
 };

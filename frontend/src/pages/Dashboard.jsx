@@ -1,75 +1,57 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { io } from "socket.io-client";
+
 import AddBudgetForm from "../components/other/AddBudgetform";
 import AddTransactionForm from "../components/other/AddTransactionForm";
 import TransactionTable from "../components/other/TransactionTable";
 import BudgetItem from "../components/other/BudgetItem";
-import money from "../assets/money.png"
-
-const socket = io("http://localhost:8000", {
-  withCredentials: true,
-  transports: ["websocket", "polling"],
-});
+import useFinanceStore from "../store/financeStore";
+import { ArrowPathIcon, CurrencyDollarIcon } from "@heroicons/react/24/solid";
 
 const Dashboard = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [budgets, setBudgets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    budgets,
+    transactions,
+    loading,
+    fetchBudgetsAndTransactions,
+    addBudget,
+    addTransaction,
+    updateTransaction,
+  } = useFinanceStore();
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [showSavings, setShowSavings] = useState(false);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    fetchBudgetsAndTransactions();
+  }, [fetchBudgetsAndTransactions]);
+
+  const handleTransactionCreated = async (newTransactionData) => {
     try {
-      setLoading(true);
-      const [transactionResponse, budgetResponse] = await Promise.all([
-        axios.get("http://localhost:8000/api/transaction", { withCredentials: true }),
-        axios.get("http://localhost:8000/api/budget", { withCredentials: true }),
-      ]);
-      setTransactions(transactionResponse.data.data);
-      setBudgets(budgetResponse.data.data);
+      if (editingTransaction) {
+        await updateTransaction(editingTransaction._id, newTransactionData);
+      } else {
+        await addTransaction(newTransactionData);
+      }
+      setEditingTransaction(null); // Clear editing state after creation/update
     } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error creating/updating transaction:", error);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-
-    socket.on("budgetUpdated", fetchData);
-    socket.on("transactionUpdated", fetchData);
-
-    return () => {
-      socket.off("budgetUpdated", fetchData);
-      socket.off("transactionUpdated", fetchData);
-    };
-  }, []);
-
-  // Handles new transaction added from the form
-  const handleTransactionCreated = (newTransaction) => {
-    setTransactions((prev) => [...prev, newTransaction]);
-  };
-
-  // Handles new budget added from the form
   const handleBudgetCreated = async (newBudget) => {
-    setBudgets((prev) => [...prev, newBudget]);
+    try {
+      await addBudget(newBudget);
+    } catch (error) {
+      console.error("Error creating budget:", error);
+    }
   };
 
   return (
     <>
-
-    <div className="d-flex align-items-center">
-      <h1 className="heading">
-        <span style={{ color: "#0DB4A7", fontWeight: "bold" }}>Small steps</span>, big savings!
-      </h1>
-       <img 
-                   src={money} 
-                   alt="money img"
-                   className="moneyImg"
-                 />
-                 </div>
+      <div className="d-flex justify-content-center align-items-center my-4">
+        <h1 className="dashboard-heading text-center">
+          <span className="highlight">Small steps</span>, big savings!
+        </h1>
+      </div>
 
       <div className="d-flex justify-content-center align-items-center flex-wrap gap-5 mt-5">
         <AddBudgetForm handleBudgetCreated={handleBudgetCreated} />
@@ -88,26 +70,53 @@ const Dashboard = () => {
       ) : (
         <>
           <div className="mt-5">
-            <div className="d-flex justify-content-between"> <h2 className="fw-bold fs-1 mb-4 mx-4">Existing Budgets</h2>
-            <button className="btn btn-outline-dark mb-3 py-1" onClick={() => setShowSavings(!showSavings)}>
-  {showSavings ? 'Show Expense Budgets' : 'Show Saving Budgets'}
-</button> </div>
-           
+            <div className="d-flex justify-content-between">
+              <h2 className="fw-bold fs-1 mb-4 mx-4">Existing Budgets</h2>
+              <button
+                className="btn btn-outline-dark mb-3 py-1 d-flex align-items-center"
+                onClick={() => setShowSavings(!showSavings)}
+              >
+                {showSavings ? (
+                  <CurrencyDollarIcon className="me-1" width={18} />
+                ) : (
+                  <ArrowPathIcon className="me-1" width={18} />
+                )}
+
+                <span className="d-none d-md-inline">
+                  {showSavings ? " Expense Budgets" : " Saving Budgets"}
+                </span>
+              </button>
+            </div>
+
             <div className="d-flex flex-wrap gap-3 align-items-center ">
-            {budgets.length > 0 ? (
-              budgets.map((budget) => <BudgetItem key={budget._id} budget={budget} transactions={transactions}  showSavings={showSavings}  />)
-            ) : (
-              <p className=" text-center text-muted fs-5 ">No budgets added yet.</p>
-            )}
+              {budgets.length > 0 ? (
+                budgets.map((budget) => (
+                  <BudgetItem
+                    key={budget._id}
+                    budget={budget}
+                    transactions={transactions}
+                    showSavings={showSavings}
+                  />
+                ))
+              ) : (
+                <div className="center-message">
+                  <p className="text-light fs-5 m-0">No budgets added yet.</p>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="mt-5">
             <h2 className="fw-bold fs-1 mb-4">Recent Transactions</h2>
             {transactions.length > 0 ? (
-              <TransactionTable transactions={transactions} setEditingTransaction={setEditingTransaction} />
+              <TransactionTable
+                transactions={transactions} // Pass transactions from store
+                setEditingTransaction={setEditingTransaction}
+              />
             ) : (
-              <p className="text-muted fs-5 text-center">No recent transactions</p>
+              <p className="text-light fs-5 text-center">
+                No recent transactions
+              </p>
             )}
           </div>
         </>

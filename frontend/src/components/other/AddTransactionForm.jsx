@@ -1,26 +1,27 @@
 import { useEffect, useState } from "react";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
-import axios from "axios";
-import { showFailureToast, showSuccessToast } from "../../utils/toastConfig";
+import useFinanceStore from "../../store/financeStore"; 
 
-const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransaction,setEditingTransaction }) => {
+const AddTransactionForm = ({ budgets, editingTransaction, setEditingTransaction }) => {
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
-    category: "",
+    category: "", // This will be the _id of the category
     type: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addTransaction, updateTransaction, loading: financeLoading } = useFinanceStore();
 
   useEffect(() => {
     if (editingTransaction) {
       setFormData({
         title: editingTransaction.title,
         amount: editingTransaction.amount,
-        category: editingTransaction?.category?.name || "", // Prevent error if category is null
+        category: editingTransaction?.category?._id || "", // Use _id for category
         type: editingTransaction.type,
       });
+    } else {
+      setFormData({ title: "", amount: "", category: "", type: "" });
     }
   }, [editingTransaction]);
 
@@ -30,48 +31,41 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     try {
-      
-      if (editingTransaction) {
-      const response=  await axios.put(
-          `http://localhost:8000/api/transaction/${editingTransaction._id}`,
-          formData,
-          { withCredentials: true }
-        );
-        setEditingTransaction(null); 
-        handleTransactionCreated(response.data.data); 
-        showSuccessToast("Transaction updated successfully");
-      } else {
-      const response=  await axios.post(
-          "http://localhost:8000/api/transaction",
-          formData,
-          { withCredentials: true }
-        );
-
-        handleTransactionCreated(response.data.data);
-        showSuccessToast("Transaction created successfully");
+      // Find the budget object to get its _id for the category field
+      const selectedBudget = budgets.find(b => b._id === formData.category);
+      if (!selectedBudget) {
+        console.error("Selected budget not found.");
+        return;
       }
-      
-      
-      setFormData({ title: "", amount: "", category: "", type: "" });
 
+      const transactionData = {
+        title: formData.title,
+        amount: parseFloat(formData.amount), 
+        category: selectedBudget._id, 
+        type: formData.type,
+      };
+
+      if (editingTransaction) {
+        await updateTransaction(editingTransaction._id, transactionData);
+        setEditingTransaction(null); 
+      } else {
+        await addTransaction(transactionData);
+      }
+
+      setFormData({ title: "", amount: "", category: "", type: "" }); 
     } catch (error) {
-      showFailureToast("Something went wrong");
       console.error("Error submitting transaction:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  
   return (
     <div
       className="card p-4 shadow-lg form-container"
       style={{ width: "100%", maxWidth: "600px" }}
     >
-      <h2 className="text-center mb-4 text-dark">
+      <h2 className="text-center mb-4 h2">
         {editingTransaction ? "Update Transaction" : "Add New Transaction"}
       </h2>
       <form onSubmit={handleSubmit}>
@@ -83,7 +77,7 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
             <input
               type="text"
               name="title"
-              className="form-control"
+              className="form-control "
               placeholder="e.g., Coffee"
               value={formData.title}
               onChange={handleChange}
@@ -97,7 +91,7 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
             <input
               type="number"
               name="amount"
-              className="form-control"
+              className="form-control "
               placeholder="e.g., 50"
               value={formData.amount}
               onChange={handleChange}
@@ -136,7 +130,7 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
               >
                 <option value="">Select a category</option>
                 {budgets.map((budget) => (
-                  <option key={budget._id} value={budget.name}>
+                  <option key={budget._id} value={budget._id}> {/* Use _id as value */}
                     {budget.name}
                   </option>
                 ))}
@@ -146,10 +140,10 @@ const AddTransactionForm = ({ handleTransactionCreated, budgets ,editingTransact
         </div>
         <button
           type="submit"
-          className="btn btn-success w-100 d-flex align-items-center justify-content-center"
-          disabled={isSubmitting}
+          className="btn form-container-btn w-100 d-flex align-items-center justify-content-center"
+          disabled={financeLoading} 
         >
-          {isSubmitting ? <span>Submitting...</span> : <span>{editingTransaction ? "Update" : "Add"} Transaction</span>}
+          {financeLoading ? <span>Submitting...</span> : <span>{editingTransaction ? "Update" : "Add"} Transaction</span>}
           <PlusCircleIcon width={20} />
         </button>
       </form>
