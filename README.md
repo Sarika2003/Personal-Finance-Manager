@@ -9,7 +9,7 @@ This project is a **Budget Management System** that allows users to manage their
 ## Tech Stack
 
 * **Frontend**: React, Zustand, Bootstrap, Javascript
-* **Backend**: Node.js, Express.js, MongoDB
+* **Backend**: Node.js, Express.js, MongoDB, REST APIs
 * **Auth**: JWT, bcrypt
 
 ---
